@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+
+    <ui:define name ="content">
+        <p:card styleClass="my-card">
+            <h:form>
+                <ui:repeat value="#{sensorStationListController.allSensorStations}" var="sensorStation">
+                    <div style="display: flex; flex-direction: column; border: 3px solid #44c793; border-radius: 5px; margin: 10px;">
+                        <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; background: #44c793; padding: 20px; flex-flow: row wrap">
+                            <div style="display: flex; align-items: center;">
+                                <em class="pi pi-heart" style="font-size:25px"/>
+                                <h:outputText style="font-size: 25px; margin-left: 10px" value="  #{sensorStation.name}" />
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <h:outputText value="Update every (s): " style="margin-right: 10px"/>
+                                <p:inputText class="input-limit" type="number" style="margin-right: 10px; background-color: #BFDFBF; border-color: #FEFFFE"  value="#{sensorStation.updateInterval}" />
+                                <p:commandButton icon="pi pi-image" action="#{sensorStationSaveBean.openImages(sensorStation)}" style="margin-right: 10px; background-color: #7E9F7D; border-color:#808380" ajax="false" />
+                                <p:commandButton  icon="pi pi-save" style="background-color: #7E9F7D; border-color:#808380"  action="#{sensorStationSaveBean.save(sensorStation)}" />
+                            </div>
+                        </div>
+
+                        <div style="background: #E6E6E6; border-bottom-left-radius: 2px; border-bottom-right-radius: 2px">
+                            <ui:repeat value="#{sensorStation.sensors}" var="sensor">
+                                <div style="padding: 30px; display: flex; flex-direction: row; justify-content: space-between; align-items: center; flex-flow: row wrap">
+                                    <div>
+                                        <h:outputText style="#{sensor.currentThresholdWarning eq true ? 'color:red;' : 'color:unset;'};font-size: 20px; " value="#{sensor.sensorTyp}(#{sensor.sensorUnit}): #{sensor.name} " />
+                                        <p:commandButton id="basic" type="button" icon="pi pi-exclamation-triangle"  styleClass="rounded-button ui-button-danger ui-button-flat" rendered="#{sensor.currentThresholdWarning}"/>
+                                        <p:overlayPanel for="basic" style="width:350px">
+                                            <p>WARNING!<br/> Value is over/under the set limit.</p>
+                                        </p:overlayPanel>
+                                    </div>
+                                    <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+                                        <div style="margin-right: 10px">
+                                            <h:outputText  value="min:" style="margin-right: 10px"/>
+                                            <p:inputText class="input-limit" type="number" value="#{sensor.lowerLimit}" />
+                                        </div>
+                                        <div>
+                                            <h:outputText  value="max:" style="margin-right: 10px"/>
+                                            <p:inputText class="input-limit" type="number" value="#{sensor.upperLimit}" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </ui:repeat>
+                        </div>
+                    </div>
+                </ui:repeat>
+            </h:form>
+        </p:card>
+    </ui:define>
+</ui:composition>

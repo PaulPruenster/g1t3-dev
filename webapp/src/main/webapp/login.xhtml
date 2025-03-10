@@ -1,0 +1,68 @@
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:ng="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+    <ui:define name ="content">
+        <div style="display:flex;width: 100%; height: 100%; justify-content: center; align-items: center">
+            <style>
+                body .ui-input-icon-left, body .ui-input-icon-right {
+                    width: 100%;
+                }
+            </style>
+
+            <p:card style="width: 25em; margin:10px" rendered="#{not sessionInfoBean.loggedIn}">
+                <f:facet name="header">
+                    <h:graphicImage library="images" name="pngwing.com.png" />
+                </f:facet>
+                <form id="login_form" action="#{request.contextPath}/login" method="post">
+                    <h:outputText value="Sign In" style="font-size: 40px; font-weight: bold; padding-left: 20px"/>
+                    <p:staticMessage style="width: 100%"  rendered="${!empty param['error']}" severity="error" summary="ERROR" detail="Credentals invalid or user deactivated by admin!" />
+                    <h:panelGrid columns="1" style="margin-top: 20px; padding-left:20px; padding-right: 20px; width: 100%;">
+                        <p:inputText id="username" type="text" required="true" placeholder="Username" style="width: 100%;"/>
+                        <p:password id="password" type="password" required="true" placeholder="Password" toggleMask="true" redisplay="true" style="width: 100%;"/>
+                    </h:panelGrid>
+                    <h:panelGrid columns="1" style="
+                            width: 100%;
+                            text-align: center;
+                            align-self: center;
+                            padding-left: 20px;
+                            padding-right: 20px">
+                        <button style=" margin-top: 20px;margin-right: 13px; width: 100%" type="submit" validateClient="true" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">
+                            <span class="ui-button-text">Login</span>
+                        </button>
+                        <div style="width: 100%">
+                        </div>
+
+                    </h:panelGrid>
+                    <h:panelGrid columns="1" style="
+                            margin-top: 20px;
+                            width: 100%;
+                            text-align: center;
+                            align-self: center;">
+                    </h:panelGrid>
+                </form>
+            </p:card>
+            <p:card style="width: 340px; margin:10px;" rendered="#{sessionInfoBean.loggedIn}">
+                <f:facet  name="header">
+                    <p:clock displayMode="analog"/>
+                    <!--<h:graphicImage library="images" name="hegonnadie.png" />-->
+                </f:facet>
+                <!--<p style="padding-top: 0px; margin-top: 0px">He is dying, because you won't recycle!</p>-->
+                <p>You are already logged in</p>
+
+                <h:panelGrid columns="1" style="
+                        width: 100%;
+                        text-align: right;
+                        align-self: center;">
+                    <p:button style="width: 100%;" value="Logout" href="/logout" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">
+                    </p:button>
+                </h:panelGrid>
+            </p:card>
+        </div>
+
+
+    </ui:define>
+</ui:composition>

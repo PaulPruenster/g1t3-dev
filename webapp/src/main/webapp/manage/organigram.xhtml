@@ -1,0 +1,450 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:h="http://xmlns.jcp.org/jsf/html"
+        xmlns:f="http://java.sun.com/jsf/core"
+        xmlns:p="http://primefaces.org/ui"
+        xmlns:ui="http://java.sun.com/jsf/facelets"
+        template="/WEB-INF/templates/main.xhtml"
+      xml:lang="en">
+    <h:outputStylesheet name="css/welcome.css" />
+    <ui:define name ="content">
+    <p:card styleClass="my-card">
+        <h:form id="form">
+
+            <h:outputStylesheet name="css/organigram.css" />
+
+            <p:growl id="growl"/>
+
+            <!-- show Message if there was nothing found with the filters -->
+            <p:outputPanel rendered="#{(organigramView.rootNode.childCount == 0)}" styleClass="centered-panel">
+                <p:outputPanel rendered="#{(organigramView.accessPoints.size() == 0)}">
+                    <h:outputLabel value="No Accesspoints found" style="font-size: 20px; color: #008080;" />
+                </p:outputPanel>
+            <p:outputPanel rendered="#{(organigramView.accessPoints.size() != 0)}">
+
+                <h:outputLabel value="No Accesspoints found.&nbsp;" style="font-size: 20px; color: #008080;" />
+                <h:commandLink
+                        style="font-size: 20px; color: #008080; text-decoration: underline; cursor: pointer;"
+                        action="#{organigramView.resetFilter()}"
+                        process="@form"
+                        update="organigram"
+                        rendered="#{organigramView.isAdmin()}">
+                    Reset
+                </h:commandLink>
+                <h:outputText value=" " rendered="#{organigramView.isAdmin()}"/>
+                <h:outputLabel
+                        value="&nbsp;filter."
+                        style="font-size: 20px; color: #008080;"
+                        rendered="#{organigramView.isAdmin()}"/>
+
+            </p:outputPanel>
+
+            </p:outputPanel>
+
+            <p:organigram id="organigram"
+                          widgetVar="organigram"
+                          value="#{organigramView.rootNode}"
+                          var="node"
+                          leafNodeConnectorHeight="0"
+                          autoScrollToSelection="true"
+                          zoom="false"
+                          selection="#{organigramView.selection}"
+                          collapsedIconClass="pi pi-plus"
+                          expandedIcon="pi pi-angle-down"
+                          style="display: flex; justify-content: center; overflow: auto;"
+                          rendered="#{(organigramView.rootNode.childCount != 0)}">
+
+                <p:ajax event="dragdrop" process="@this" update="@form:growl @form:organigram"
+                        listener="#{organigramView.nodeDragDropListener}"/>
+                <p:ajax event="select" process="@this" update="@form:growl"
+                        listener="#{organigramView.nodeSelectListener}"
+                        oncomplete="PF('organigram').scrollToSelection(); return false;"/>
+                <p:ajax event="contextmenu" process="@this"/>
+                <p:ajax event="collapse" process="@this" update="@form:growl"
+                        listener="#{organigramView.nodeCollapseListener}"/>
+                <p:ajax event="expand" process="@this" update="@form:growl"
+                        listener="#{organigramView.nodeExpandListener}"/>
+
+                <p:organigramNode>
+                    <h:outputText value="#{node.data}"/>
+                </p:organigramNode>
+
+                <p:organigramNode type="root"
+                                  icon="pi pi-server"
+                                  style="border-radius: 10px;">
+                    <h:outputText value="#{node.data}"/>
+                </p:organigramNode>
+
+                <p:organigramNode type="accessPoint"
+                                  styleClass="accessPoint"
+                                  icon="pi pi-database"
+                                  collapsedIcon="pi pi-chevron-up"
+                                  expandedIcon="pi pi-chevron-down"
+                                  connectorPosition="BottomCenter">
+                    <h:outputText value="#{node.data.getName()} (#{node.data.getAccessPointId()})"/>
+
+
+                </p:organigramNode>
+
+                <p:organigramNode type="sensorStation"
+                                  styleClass="sensorStation"
+                                  collapsedIcon="pi pi-chevron-up"
+                                  expandedIcon="pi pi-chevron-down"
+                                  icon="pi pi-box">
+
+                    <p:outputPanel rendered="#{organigramView.sensorStationIsOnline(node.data)}" style="display: flex; justify-content: space-between; align-items: center;">
+                        <p:commandButton  icon="pi pi-circle-on" title="Status: ONLINE" styleClass="rounded-button ui-button-success ui-button-flat" />
+                        <h:outputText style="flex-grow: 1; text-align: center; margin-right: 25px" value="#{node.data.getName()} (#{node.data.getSensorStationId()})"/>
+                    </p:outputPanel>
+
+                    <p:outputPanel rendered="#{!organigramView.sensorStationIsOnline(node.data)}" style="display: flex; justify-content: space-between; align-items: center;">
+                        <p:commandButton icon="pi pi-circle-on" title="Status: OFFLINE" styleClass="rounded-button ui-button-danger ui-button-flat" />
+                        <h:outputText style="flex-grow: 1; text-align: center; margin-right: 25px" value="#{node.data.getName()} (#{node.data.getSensorStationId()})"/>
+                    </p:outputPanel>
+
+                    <ul style="text-align: left">
+                        <li><h:outputText value="Update every (s): #{node.data.getUpdateInterval()}" style="padding-right: 10px"/></li>
+                        <li><h:outputText value="Gaertner: #{node.data.getGaertner()!=null ? node.data.getGaertner().getUsername() : '/'}" /></li>
+                    </ul>
+                    <div class="text-vertical-center">
+                    </div>
+                </p:organigramNode>
+
+                <p:organigramNode type="sensor"
+                                  styleClass="sensor"
+                                  icon="pi pi-chart-bar">
+                        <p:outputPanel rendered="#{node.data.currentThresholdWarning}" style="display: flex; justify-content: space-between; align-items: center;">
+                            <em class="pi pi-exclamation-triangle" style="color:red; margin-left: 10px" title="The limit has been exceeded."/>
+                            <h:outputText style="flex-grow: 1; text-align: center; margin-right: 25px" value="#{node.data.getName()} (#{node.data.getSensorId()})"/>
+                        </p:outputPanel>
+                        <p:outputPanel rendered="#{!node.data.currentThresholdWarning}">
+                            <h:outputText style="flex-grow: 1; text-align: center; margin-right: 25px" value="#{node.data.getName()} (#{node.data.getSensorId()})"/>
+                        </p:outputPanel>
+
+                        <ul style="text-align: left">
+                            <li><h:outputText value="Typ: #{node.data.getSensorTyp()}" /></li>
+                            <li><h:outputText value="Sensor Unit: #{node.data.getSensorUnit()}" /></li>
+                            <li><h:outputText value="Value Range: #{node.data.getLowerLimit()} - #{node.data.getUpperLimit()}" /></li>
+
+                        </ul>
+
+                </p:organigramNode>
+            </p:organigram>
+
+
+            <!-- Menu for the accesspoint Node -->
+            <p:contextMenu for="organigram" nodeType="accessPoint">
+
+                <p:menuitem value="Edit AccessPoint"
+                            update="@form:organigram @form:growl @form:accessPointEditDialog"
+                            icon="pi pi-pencil"
+                            oncomplete="PF('accessPointEditDialog').show()"
+                >
+                    <f:setPropertyActionListener value="#{organigramView.selection.data}" target="#{accessPointDetailController.accessPoint}" />
+                </p:menuitem>
+
+                <p:menuitem value="Open AccessPoint"
+                            update="@form:organigram @form:growl @form:accessPointEditDialog"
+                            icon="pi pi-external-link"
+                            action="#{organigramView.changeUrl()}"
+                />
+                <p:menuitem
+                        value="Delete AccessPoint"
+                        action="#{organigramView.deleteAccessPoint()}"
+                        update="@all @all:filter_form"
+                        icon="pi pi-times">
+                    <p:confirm header="AccessPoint Löschen"
+                               message="Soll der AccessPoint, mit allen SensorStations, wirklich gelöscht werden?"
+                               icon="ui-icon-alert" />
+                </p:menuitem>
+            </p:contextMenu>
+
+
+            <!-- Menu for the sensorStation Node -->
+            <p:contextMenu for="organigram" nodeType="sensorStation">
+                <p:menuitem value="Edit Station"
+                            update="@form:organigram @form:growl @form:sensorStationEditDialog"
+                            icon="pi pi-pencil"
+                                oncomplete="PF('sensorStationEditDialog').show()">
+                    <f:setPropertyActionListener value="#{organigramView.selection.data}" target="#{sensorStationDetailController.sensorStation}" />
+                </p:menuitem>
+
+                <p:menuitem value="Open Station"
+                            update="@form:organigram @form:growl @form:sensorStationEditDialog"
+                            icon="pi pi-external-link"
+                            action="#{organigramView.changeUrl()}"
+                />
+                <p:menuitem value="Open Images"
+                            update="@form:organigram @form:growl @form:sensorStationEditDialog"
+                            icon="pi pi-images"
+                            action="#{organigramView.changeToImages()}"
+                />
+
+                <p:menuitem value="Show Status"
+                            update="@form:organigram @form:growl @form:sensorStatusEditDialog"
+                            icon="pi pi-info"
+                            oncomplete="PF('sensorStatusEditDialog').show()">
+                    <f:setPropertyActionListener value="#{organigramView.selection.data}" target="#{sensorStationDetailController.sensorStation}" />
+                </p:menuitem>
+
+                <p:menuitem value="Delete"
+                            update="organigram @form:growl"
+                            icon="pi pi-times"
+                            action="#{organigramView.deleteSensorStation()}">
+                    <p:confirm header="Station Löschen"
+                               message="Soll die sensorStation, mit allen Sensoren, wirklich gelöscht werden?"
+                               icon="ui-icon-alert" />
+                </p:menuitem>
+            </p:contextMenu>
+
+
+            <!-- Menu for the sensor Node -->
+            <p:contextMenu for="organigram" nodeType="sensor">
+                <p:menuitem value="Edit Sensor"
+                            update="@form:organigram @form:growl @form:sensorEditDialog"
+                            icon="pi pi-pencil"
+                            oncomplete="PF('sensorEditDialog').show()"
+                >
+                    <f:setPropertyActionListener value="#{organigramView.selection.data}" target="#{sensorDetailController.sensor}" />
+                </p:menuitem>
+
+                <p:menuitem value="Open Sensor"
+                            update="organigram @form:growl"
+                            icon="pi pi-external-link"
+                            action="#{organigramView.changeUrl()}"
+                >
+                </p:menuitem>
+
+                <p:menuitem value="Delete"
+                            update="organigram @form:growl"
+                            icon="pi pi-times"
+                            action="#{organigramView.deleteSensor()}">
+                    <p:confirm header="Sensor Löschen"
+                               message="Soll der Sensor wirklich gelöscht werden?"
+                               icon="ui-icon-alert" />
+                </p:menuitem>
+            </p:contextMenu>
+
+
+            <p:dialog
+                    header="Edit SensorStation"
+                    id="sensorStationEditDialog"
+                    widgetVar="sensorStationEditDialog"
+                    modal="true"
+                    showEffect="fade"
+                    hideEffect="fade"
+                    resizable="false"
+            >
+                <p:outputPanel id="sensorStationData" rendered="#{not empty sensorStationDetailController.sensorStation}">
+                    <h:panelGrid columns="2">
+                        <p:outputLabel for="id" value="Id: " />
+                        <p:inputText id="id" value="#{sensorStationDetailController.sensorStation.sensorStationId}" disabled="true"/>
+
+                        <p:outputLabel for="name" value="Name: " />
+                        <p:inputText id="name" value="#{sensorStationDetailController.sensorStation.name}" />
+
+                        <p:outputLabel for="updateInterval" value="Update Interval:"/>
+                        <p:inputText id="updateInterval" type="number" value="#{sensorStationDetailController.sensorStation.updateInterval}" />
+
+                        <p:outputLabel
+                                for="gaertner"
+                                rendered="#{sessionInfoBean.hasRole('ADMIN')}"
+                                value="Gaertner:"
+                        />
+                        <p:selectOneMenu
+                                id="gaertner"
+                                style="width: 100%"
+                                value="#{sensorStationDetailController.sensorStationGardenName}"
+                                rendered="#{sessionInfoBean.hasRole('ADMIN')}"
+                                >
+                            <f:selectItem itemLabel="None" itemValue=""/>
+                            <f:selectItems value="#{userService.getAllUsersByRole('GARDENER')}" var="user" itemLabel="#{user.username}"
+                                           itemValue="#{user.username}" />
+
+                        </p:selectOneMenu>
+                    </h:panelGrid>
+                    <p:separator />
+
+                    <h:panelGrid columns="3">
+                        <p:commandButton
+                                value="Save"
+                                action="#{sensorStationDetailController.doSaveSensorStation()}"
+                                oncomplete="PF('sensorStationEditDialog').hide()"
+                                update="@form:organigram @form:growl">
+                            <f:actionListener binding="#{organigramView.updateSensorStationNode()}" />
+                        </p:commandButton>
+                        <p:commandButton value="Reload" action="#{sensorStationDetailController.doReloadSensorStation()}" update="@form:sensorStationEditDialog"/>
+                        <p:commandButton value="Abort" onclick="PF('sensorStationEditDialog').hide()"/>
+                    </h:panelGrid>
+                </p:outputPanel>
+            </p:dialog>
+
+
+
+            <p:dialog
+                    header="Station Status"
+                    id="sensorStatusEditDialog"
+                    widgetVar="sensorStatusEditDialog"
+                    modal="true"
+                    showEffect="fade"
+                    hideEffect="fade"
+                    resizable="false"
+            >
+                <p:outputPanel  rendered="#{not empty sensorStationDetailController.sensorStation}">
+                    <h:panelGrid columns="2">
+
+                        <p:outputLabel for="name_status" value="Name: " />
+                        <p:inputText id="name_status" disabled="true" value="#{sensorStationDetailController.sensorStation.name}" />
+
+                        <p:outputLabel for="updateInterval_status" value="Update Interval:"/>
+                        <p:inputText id="updateInterval_status" disabled="true" type="number" value="#{sensorStationDetailController.sensorStation.updateInterval}" />
+
+                        <p:outputLabel for="status_message" value="Status:"/>
+                        <p:inputText id="status_message" disabled="true" value="#{organigramView.sensorStationIsOnline(sensorStationDetailController.sensorStation) ? 'ONLINE' : 'OFFLINE'}" />
+
+                        <p:outputLabel for="status" value="last Update:"/>
+                        <p:inputText id="status" disabled="true" value="#{organigramView.getLastUpdate(sensorStationDetailController.sensorStation.sensorStationId).toString()}" />
+                    </h:panelGrid>
+                    <p:separator />
+                </p:outputPanel>
+                <h:panelGrid columns="1">
+                    <p:commandButton value="close" onclick="PF('sensorStatusEditDialog').hide()"/>
+                </h:panelGrid>
+            </p:dialog>
+
+
+
+
+
+
+            <p:dialog
+                    header="Edit Sensor"
+                    id="sensorEditDialog"
+                    widgetVar="sensorEditDialog"
+                    modal="true"
+                    showEffect="fade"
+                    hideEffect="fade"
+                    resizable="false"
+            >
+                <p:outputPanel id="sensorData" rendered="#{not empty sensorDetailController.sensor}">
+                    <h:panelGrid columns="2">
+                        <p:outputLabel for="sensorId" value="Id: " />
+                        <p:inputText id="sensorId" value="#{sensorDetailController.sensor.sensorId}" disabled="true"/>
+                        <p:outputLabel for="sensorName" value="Name: " />
+                        <p:inputText id="sensorName" value="#{sensorDetailController.sensor.name}" />
+                        <p:outputLabel for="unit" value="Sensor-Unit:"/>
+                        <p:inputText id="upperLimit" type="number" value="#{sensorDetailController.sensor.upperLimit}" />
+                        <p:outputLabel for="upperLimit" value="Upper-Limit:"/>
+                        <p:inputText id="lowerLimit" type="number" value="#{sensorDetailController.sensor.lowerLimit}" />
+
+                        <p:outputLabel for="unit" value="Sensor-Unit:"/>
+                        <p:selectOneMenu disabled="true" id="unit" value="#{sensorDetailController.sensor.sensorUnit}" style="width: 100%; margin-top:10px">
+                            <f:selectItems value="#{sensorUnitListController.sensorUnits}" var="unit" itemLabel="#{unit}" itemValue="#{unit}"/>
+                        </p:selectOneMenu>
+
+                        <p:outputLabel for="typ" value="Sensor-Typ:"/>
+                        <p:selectOneMenu disabled="true" id="typ" value="#{sensorDetailController.sensor.sensorTyp}" style="width: 100%; margin-top:10px">
+                            <f:selectItems value="#{sensorTypListController.itemTypes}" var="type" itemLabel="#{type}" itemValue="#{type}"/>
+                        </p:selectOneMenu>
+                    </h:panelGrid>
+                    <p:separator />
+
+                    <h:panelGrid columns="3">
+                        <p:commandButton
+                                value="Save"
+                                action="#{sensorDetailController.doSaveSensor()}"
+                                oncomplete="PF('sensorEditDialog').hide()"
+                                update="@form:organigram @form:growl">
+                            <f:actionListener binding="#{organigramView.updateSensorNode()}" />
+                        </p:commandButton>
+                        <p:commandButton
+                                value="Reload"
+                                action="#{sensorDetailController.doReloadSensor()}"
+                                update="@form:sensorEditDialog"/>
+                        <p:commandButton value="Abort" onclick="PF('sensorEditDialog').hide()"/>
+                    </h:panelGrid>
+                </p:outputPanel>
+            </p:dialog>
+
+
+            <p:dialog
+                    header="Edit AccessPoint"
+                    id="accessPointEditDialog"
+                    widgetVar="accessPointEditDialog"
+                    modal="true"
+                    showEffect="fade"
+                    hideEffect="fade"
+                    resizable="false">
+                <p:outputPanel id="accessPointData" rendered="#{not empty accessPointDetailController.accessPoint}">
+                    <h:panelGrid columns="2">
+                        <p:outputLabel for="accessPointId" value="Id: " />
+                        <p:inputText id="accessPointId" value="#{accessPointDetailController.accessPoint.accessPointId}" disabled="true"/>
+                        <p:outputLabel for="accessPointName" value="Name: " />
+                        <p:inputText id="accessPointName" value="#{accessPointDetailController.accessPoint.name}" />
+                    </h:panelGrid>
+                    <p:separator />
+
+                    <h:panelGrid columns="3">
+                        <p:commandButton
+                                value="Save"
+                                action="#{accessPointDetailController.doSaveAccessPoint()}"
+                                oncomplete="PF('accessPointEditDialog').hide()"
+                                update="@form:organigram @form:growl">
+                            <f:actionListener binding="#{organigramView.updateAccessPointNode()}" />
+                        </p:commandButton>
+                        <p:commandButton
+                                value="Reload"
+                                action="#{accessPointDetailController.doReloadAccessPoint()}"
+                                update="@form:accessPointEditDialog"/>
+                        <p:commandButton value="Abort" onclick="PF('accessPointEditDialog').hide()"/>
+                    </h:panelGrid>
+                </p:outputPanel>
+            </p:dialog>
+        </h:form>
+    </p:card>
+
+        <h:form id="filter_form">
+            <p:card
+                    rendered="#{organigramView.isAdmin()}"
+                    styleClass="my-card">
+                <f:facet name="title">
+                    Filter:
+                </f:facet>
+                <h:panelGrid columns="3">
+                    <p:selectBooleanCheckbox value="#{organigramView.showSensors}" itemLabel="show sensors"/>
+                </h:panelGrid>
+
+                <h4>AccessPoints: </h4>
+                <p:selectManyMenu
+                        id="gaertnerMenu"
+                        value="#{organigramView.selectedAccessPoints}"
+                        var="c"
+                        filter="true"
+                        filterMatchMode="contains"
+                        showCheckbox="true">
+                    <f:selectItems value="#{organigramView.accessPoints}" var="user" itemLabel="#{user.name}"
+                                   itemValue="#{user}"/>
+
+                    <p:column>
+                        <h:outputText value="#{c.name}(#{c.accessPointId})"/>
+                    </p:column>
+
+                </p:selectManyMenu>
+                <f:facet name="footer">
+                    <p:commandButton value="Update Filter" action="#{organigramView.applyFilterToOrganigram()}" update="form form:organigram form:growl @form:gaertnerMenu"/>
+                </f:facet>
+            </p:card>
+        </h:form>
+        <!-- Default confirmDialog -->
+        <p:confirmDialog global="true" hideEffect="fade">
+            <p:commandButton value="Ja" type="button"
+                             styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+            <p:commandButton value="Nein" type="button"
+                             styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+        </p:confirmDialog>
+
+    </ui:define>
+</ui:composition>

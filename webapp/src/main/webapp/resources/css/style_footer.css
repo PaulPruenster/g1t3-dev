@@ -1,0 +1,59 @@
+.table-spacer {
+    width: 1%;
+}
+.footer-link-text, body .ui-commandlink,  body .ui-link{
+    color: white;
+    font-family: 'Lucida Console', Courier New, monospace;
+}
+
+.footer-link-text:hover, body .ui-commandlink:hover,  body .ui-link:hover {
+    color: white;
+}
+
+.footer-link-text:active, body .ui-commandlink:active,  body .ui-link:active {
+    color: lightblue;
+}
+
+
+.copyright-bottom {
+    text-align: center;
+    vertical-align: center;
+    font-family: 'Lucida Console', Courier New, monospace;
+    width: 100%;
+}
+
+.white-box {
+    width: 100%;
+    text-align: center;
+    vertical-align: top;
+    font-family: 'Lucida Console', Courier New, monospace;
+    margin-bottom: 20px;
+}
+
+
+
+@media (max-width: 640px) {
+    .white-box {
+        border: None;
+    }
+    .section:not(.last-box) {
+        border-bottom: 5px solid white;
+        margin: 0 5%;
+    }
+    .hidden-mobile {
+        display: none;
+    }
+}
+
+@media (min-width: 641px) {
+    .white-box {
+        border: 3px solid white;
+        height:100%;
+    }
+    .section {
+        border-bottom: None;
+    }
+    .copyright-bottom {
+        margin-top: 20px;
+    }
+}

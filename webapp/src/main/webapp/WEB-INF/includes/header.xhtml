@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xml:lang="en">
+<head>
+    <title/>
+</head>
+<body>
+<ui:composition>
+    <ui:fragment rendered="#{sessionInfoBean.loggedIn}">
+
+        <h:form>
+            <p:menubar style="background-color: #0274be; border-radius: 0px;border:None">
+                <p:menuitem onclick="history.back()" rendered="#{sessionInfoBean.loggedIn}">
+                    <em style="color:white" class="pi pi-fw pi-arrow-left"/>
+                </p:menuitem>
+
+                <p:menuitem value="Home" url="/secured/welcome.xhtml">
+                    <em class="icon pi pi-fw pi-home" style="margin: 0px"/>
+                </p:menuitem>
+
+                <p:menuitem value="Profile" url="/secured/userEdit.xhtml">
+                    <em class="icon pi pi-fw pi-user"/>
+                    <span class="menu-text">Profile</span>
+                </p:menuitem>
+
+                <p:menuitem rendered="#{sessionInfoBean.hasRole('ADMIN')}" value="Manage Users" url="/admin/users.xhtml">
+                    <em class="icon pi pi-fw pi-user"/>
+                    <span class="menu-text">Manage Users</span>
+                </p:menuitem>
+
+                <p:menuitem rendered="#{sessionInfoBean.hasRole('ADMIN')}" styleClass="ma ui-menuitem-text" value="Plants" url="/admin/sensorStations.xhtml" >
+                    <em class="icon pi pi-fw pi-box"/>
+                    <span class="menu-text">Sensor Stations</span>
+                </p:menuitem>
+
+                <p:menuitem rendered="#{sessionInfoBean.hasRole('ADMIN')}" styleClass="ma ui-menuitem-text" value="Measurment" url="/admin/measurmentDatas.xhtml" >
+                    <em class="icon pi pi-fw pi-chart-line"/>
+                    <span class="menu-text">Measurement Data</span>
+                </p:menuitem>
+
+                <p:menuitem styleClass="ma ui-menuitem-text" value="organigramm_test" url="/manage/organigram.xhtml" >
+                    <em class="icon pi pi-fw pi-wallet"/>
+                    <span class="menu-text">Overview</span>
+                </p:menuitem>
+
+                <p:menuitem rendered="#{sessionInfoBean.hasRole('ADMIN')}" styleClass="ma ui-menuitem-text" value="OrganigramGaertnerView" url="/admin/OrganigramGaertnerView.xhtml" >
+                    <em class="icon pi pi-fw pi-map"/>
+                    <span class="menu-text">Gardener Overview</span>
+                </p:menuitem>
+
+                <f:facet name="options">
+                    <p:menuitem>
+                        <p:button styleClass="rounded-button ui-button-outlined"
+                                  style="margin-top: 5px; color:white; font-family: 'Lucida Console', Courier New, monospace;"
+                                  href="/logout" value="Logout" title="Logout"/>
+                    </p:menuitem>
+                </f:facet>
+            </p:menubar>
+        </h:form>
+    </ui:fragment>
+</ui:composition>
+</body>
+</html>
+
+
+

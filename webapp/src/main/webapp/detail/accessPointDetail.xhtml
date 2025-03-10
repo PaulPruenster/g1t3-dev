@@ -1,0 +1,171 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+
+    <ui:define name ="content">
+        <p:card styleClass="my-card">
+            <f:metadata>
+                <f:viewParam type="preRenderView" name="id" value="#{accessPointDetailBean.accessPointId}"/>
+            </f:metadata>
+
+
+            <h:form>
+                <div style="display: flex; margin-bottom: 20px">
+                    <!-- Titel Left -->
+                    <div style="width: 100%; align-self: center;">
+                        <p style="margin:0;font-size: 30px">
+                            <p:outputPanel><h1>Edit AccessPoint:</h1></p:outputPanel>
+                        </p>
+                    </div>
+                </div>
+
+
+                <div class="card">
+                        <h:panelGrid columns="2" style="width: 50%">
+
+                            <p:outputLabel style="margin-top:10px" value="ID:" />
+                            <p:inputText
+                                    value="#{accessPointDetailController.accessPoint.id}"
+                                    id="accessPointId"
+                                    disabled="true"
+                                    style="width: 100%; margin-top:10px"
+                                    required="true"
+                            />
+
+                            <p:outputLabel value="Deck Name" />
+                            <p:inputText
+                            value="#{accessPointDetailController.accessPoint.name}"
+                            id="Name" style="width: 100%"
+                            maxlength="100"
+                            required="true"
+                            />
+
+                        </h:panelGrid>
+                            <p:commandButton
+                                    value="Save"
+                                    actionListener="#{accessPointDetailController.doSaveAccessPoint()}"
+                                    styleClass="button"
+                                    update="@form"
+                            />
+                </div>
+
+            </h:form>
+        </p:card>
+
+        <!-- Card for editing cards -->
+        <p:card class="my-card">
+
+            <p:outputPanel>
+                <div style="display: flex; flex-direction: row; align-items: center; justify-content: space-between; padding: 0 30px">
+                    <h1>Sensor Station:</h1>
+                    <p:commandButton
+                            icon="pi pi-wifi"
+                            value="Connect new station"
+                            styleClass="button"
+                            onclick="PF('connect-dialog').show()"
+                            update=""
+                    />
+                </div>
+                <h:form id="sensorStationForm">
+                    <p:dataTable id="sensorStationTable" var="sensorStation" value="#{accessPointDetailBean.getSensorStationListFromAccessPoint()}" style="margin-top: 20px" reflow="true" rows="10" paginator="true" scrollable="true">
+                        <p:column headerText="Name">
+                            <h:outputText value="#{sensorStation.name}"/>
+                        </p:column>
+                        <p:column headerText="Gardener">
+                            <h:outputText value="#{sensorStation.gaertner.username}"/>
+                        </p:column>
+                        <p:column headerText="Id">
+                            <h:outputText value="#{sensorStation.updateInterval}"/>
+                        </p:column>
+
+                        <p:column style="width:100px;text-align: center">
+                            <p:button style="margin-right: 10px" icon="pi pi-external-link" type="button" styleClass="rounded-button ui-button-outlined" href="/detail/sensorStationDetail.xhtml?id=#{sensorStation.sensorStationId}"/>
+
+                            <p:commandButton  style="margin-right: 10px" styleClass="rounded-button ui-button-outlined" update=":sensorStationForm:sensorStationEditDialog" oncomplete="PF('sensorStationEditDialog').show()" icon="pi pi-pencil" title="Edit">
+                                <f:setPropertyActionListener value="#{sensorStation}" target="#{sensorStationDetailController.sensorStation}" />
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" width="300">
+                        <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                        <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+                    </p:confirmDialog>
+
+                    <!-- Dialog to edit existing card -->
+                    <p:dialog header="Edit Card" id="sensorStationEditDialog" widgetVar="sensorStationEditDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+                        <p:outputPanel id="sensorStationData" rendered="#{not empty sensorStationDetailController.sensorStation}">
+                            <h:panelGrid columns="2" cellpadding="5" >
+                                <p:outputLabel value="name" />
+                                <p:inputText value="#{sensorStationDetailController.sensorStation.name}" id="name" style="width: 100%" maxlength="100"/>
+                                <p:outputLabel value="updateInterval" />
+                                <p:inputText value="#{sensorStationDetailController.sensorStation.updateInterval}" id="updateInterval" style="width: 100%;"/>
+                            </h:panelGrid>
+
+                            <p:separator />
+
+                            <!-- Buttons at the bottom -->
+                            <h:panelGrid columns="3">
+                                <p:commandButton value="Save" action="#{sensorStationDetailController.doSaveSensorStation()}" oncomplete="PF('sensorStationEditDialog').hide()" update=":sensorStationForm:sensorStationTable"/>
+                                <p:commandButton value="Reload" action="#{sensorStationDetailController.doReloadSensorStation()}" update=":sensorStationForm:sensorStationData"/>
+                                <p:commandButton value="Abort" onclick="PF('userEditDialog').hide()"/>
+                            </h:panelGrid>
+                        </p:outputPanel>
+                    </p:dialog>
+                </h:form>
+
+
+                <p:dialog id="connect-dialog" header="Connect new sensor station" widgetVar="connect-dialog" minHeight="40" showEffect="fade" modal="true">
+                    <div class="card" style="width: 770px">
+                        <h:form id="form-table">
+                            <p:growl id="messages" showDetail="true"/>
+
+                            <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center; margin-bottom: 30px">
+                                <div style="display: flex; flex-direction: row; align-items: center; gap: 20px">
+                                    <p:outputLabel value="Search connections"/>
+                                    <p:toggleSwitch id="toggle-switch" value="#{accessPointDetailController.accessPoint.makeConnection}">
+                                        <p:ajax update="form-table:table-panel refresh-button" listener="#{accessPointDetailController.doSaveAccessPoint()}"/>
+                                    </p:toggleSwitch>
+                                </div>
+
+                                <p:commandButton disabled="#{!accessPointDetailController.accessPoint.makeConnection}" id="refresh-button" icon="pi pi-refresh" update="devices"/>
+                            </div>
+
+                            <p:outputPanel id="table-panel">
+                                <p:dataTable id="devices" var="device" rendered="#{accessPointDetailController.accessPoint.makeConnection}" disabledSelection="true" value="#{bluetoothListController.getAllBluetoothDevicesByAccessPointId(accessPointDetailController.accessPoint.accessPointId)}" rowKey="#{device.bluetoothDeviceId}" selectionMode="single" scrollable="true" scrollHeight="250">
+
+                                    <p:column headerText="Name">
+                                        <h:outputText value="#{device.deviceName}" />
+                                    </p:column>
+                                    <p:column headerText="shouldConnect">
+                                        <h:outputText value="#{device.shouldConnect}" />
+                                    </p:column>
+                                    <p:column headerText="connected">
+                                        <h:outputText value="#{device.connected}" />
+                                    </p:column>
+
+                                    <p:column>
+                                        <p:commandButton
+                                                styleClass="#{bluetoothListController.selectedDevice.equals(device) ? 'ui-button-danger' : 'ui-button-success'}"
+                                                disabled="#{bluetoothListController.selectedDevice != null and !bluetoothListController.selectedDevice.equals(device)}"
+                                                action="#{bluetoothListController.connectDevice(device)}"
+                                                update="@form:messages devices"
+                                                icon="pi #{bluetoothListController.selectedDevice.equals(device) ? 'pi-times' : 'pi-wifi'}"
+                                                title="Connect" />
+                                    </p:column>
+                                </p:dataTable>
+                            </p:outputPanel>
+
+                            <p:poll interval="2" listener="#{accessPointDetailController.doReloadAccessPoint()}" update="table-panel toggle-switch"/>
+                        </h:form>
+                    </div>
+                </p:dialog>
+            </p:outputPanel>
+        </p:card>
+
+    </ui:define>
+</ui:composition>

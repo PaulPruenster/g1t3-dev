@@ -1,0 +1,57 @@
+.ma{
+    --text-color: white;
+}
+
+.icon{
+    color: white;
+    margin-right: 5px;
+}
+
+.menu-text{
+    color:white;
+    font-family: 'Lucida Console', Courier New, monospace;
+}
+
+.my-sub-menu{
+    color:white;
+}
+
+.my-card {
+    padding-top: 0px;
+    margin: 20px 5%;
+}
+
+
+.ui-menuitem-text {
+    vertical-align: middle;
+    color: white;
+}
+
+.body .ui-menu .ui-menu-list .ui-menuitem .ui-menuitem-link .ui-menuitem-text {
+    vertical-align: middle;
+    color: white;
+}
+
+.plant {
+    border: 3px solid #018101;
+    background: #7EBF7E;
+    margin-bottom: 10px;
+    text-align: left;
+    vertical-align: middle;
+    color: white;
+}
+
+.input-limit {
+    width: 75px;
+}
+
+.text-vertical-center {
+    display: flex;
+    align-items: center;
+}
+
+.centered-panel {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

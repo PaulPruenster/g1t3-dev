@@ -1,0 +1,106 @@
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:ng="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+    <ui:define name ="content">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js">
+        </script>
+
+        <f:metadata>
+            <f:viewParam name="id" value="#{imageBean.imageID}"/>
+        </f:metadata>
+
+        <p:card>
+        <div style="display:flex; flex-direction: column; width: 100%; height: 100%; justify-content: center; align-items: center">
+            <h1>Image gallery</h1>
+
+            <div style="display: flex; flex-direction: row;  justify-content: space-evenly; gap: 20px; margin-bottom: 20px;">
+                <p:commandButton action="#{imageBean.refresh()}" icon="pi pi-refresh" />
+                <p:commandButton value="Upload" type="button" icon="pi pi-upload" onclick="PF('dlg2').show()"/>
+                <p:commandButton rendered="#{sessionInfoBean.hasRole('ADMIN')}" value="QR-code" type="button" icon="pi pi-qrcode" onclick="PF('dlg3').show()"/>
+                <p:button rendered="#{!sessionInfoBean.loggedIn}" value="Login" type="button" styleClass="ui-button-secondary" href="/login.xhtml"/>
+            </div>
+
+            <div class="card">
+                <p:galleria id="galleria" value="#{imageBean.imgStrings}" var="photo" numVisible="5" style="max-width: 500px">
+                    <h:graphicImage value="#{photo}" style="width: 80%"/>
+                    <f:facet name="thumbnail">
+                        <h:graphicImage value="#{photo}" style="width: 100px"/>
+                    </f:facet>
+                </p:galleria>
+            </div>
+
+            <p:dialog id="upload-dialog" header="Upload your favorite images of this plant" widgetVar="dlg2" minHeight="40" width="850" showEffect="fade" modal="true">
+                <div class="card" style="width: 770px">
+                    <h:form>
+                        <p:growl id="messages" showDetail="true"/>
+
+                        <p:fileUpload mode="advanced"
+                                      multiple="false"
+                                      sizeLimit="1048576" allowTypes="/(\.|\/)(gif|jpe?g|png)$/"
+                                      invalidSizeMessage="Maximum file size allowed is 100 KB"
+                                      invalidFileMessage="only gif | jpg | jpeg | png is allowed"
+                                      update="messages upload-dialog galleria"
+                                      listener="#{imageBean.handleFileUpload}"
+                                      oncomplete="PF('upload-dialog').hide()">
+                            <p>or your files here:</p>
+                        </p:fileUpload>
+                    </h:form>
+                </div>
+            </p:dialog>
+
+            <p:dialog id="qrcode-dialog" widgetVar="dlg3" minHeight="40" showEffect="fade" modal="true">
+                <div class="card">
+                    <h:form>
+                        <p:growl id="messages" showDetail="true"/>
+
+                        <p:outputPanel id="pnlPrint">
+                            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                <h1>Images of this plant</h1>
+                                <p>Scan the qr-code to look at some nice images</p>
+                                <main>
+                                    <div id="qrcode">
+
+                                    </div>
+                                </main>
+
+                                <script>
+                                    let qrcode = new QRCode("qrcode",
+                                    window.location.href);
+                                </script>
+                            </div>
+                        </p:outputPanel>
+
+                        <div style="display: flex; flex-direction: column; align-items: center; padding: 10px; margin-top: 30px">
+                            <p:commandButton value="Print" type="button" icon="pi pi-print" styleClass="shadow-1 mb-3">
+                                <p:printer target="pnlPrint" configuration="globalStyles: true, title: 'Plant Images', timeout: 1000"/>
+                            </p:commandButton>
+                        </div>
+                    </h:form>
+
+                    <div style="display: flex; flex-direction: column; align-items: center; padding: 10px">
+                        <p:commandButton id="saveButton" value="Save as image" type="button" icon="pi pi-download"/>
+                    </div>
+                    <script>
+                        let saveButton = document.getElementById('saveButton');
+                        saveButton.addEventListener('click', function() {
+                            let image = document.getElementById('qrcode').childNodes[2]
+
+                            // Create a temporary link element
+                            let link = document.createElement('a');
+                            link.href = image.src;
+                            link.download = 'Plant-#{imageBean.imageID}-qrcode';
+
+                            // Simulate a click event on the link to trigger the download
+                            link.click();
+                        });
+                    </script>
+                </div>
+            </p:dialog>
+        </div>
+        </p:card>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+
+    <ui:define name ="content">
+        <p:card styleClass="my-card">
+            <h:form>
+                <p:dataTable id="measurementTable" var="measurement" value="#{measurementDataListController.allMeasurementDatas}">
+                    <p:column headerText="measurementId">
+                        <h:outputText value="#{measurement.measurementId}"/>
+                    </p:column>
+                    <p:column headerText="measurementLabel">
+                        <h:outputText value="#{measurement.measurementLabel}"/>
+                    </p:column>
+                    <p:column headerText="Value">
+                        <h:outputText value="#{measurement.val}"/>
+                    </p:column>
+                    <p:column headerText="SensorId">
+                        <h:outputText value="#{measurement.sensor.sensorId}" />
+                    </p:column>
+                    <p:column headerText="measurement_timestamp">
+                        <h:outputText value="#{measurement.measurementTimestamp}"/>
+                    </p:column>
+                </p:dataTable>
+
+            </h:form>
+        </p:card>
+    </ui:define>
+</ui:composition>

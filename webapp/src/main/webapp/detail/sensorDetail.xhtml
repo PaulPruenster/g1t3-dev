@@ -1,0 +1,126 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+
+   <ui:define name ="content">
+      <p:card
+              styleClass="my-card"
+              style="padding: 0px 20px 20px 20px;">
+         <f:metadata>
+            <f:viewParam type="preRenderView" name="id" value="#{sensorDetailBean.sensorId}"/>
+         </f:metadata>
+
+
+         <h:form>
+            <div style="display: flex; margin-bottom: 20px">
+               <!-- Titel Left -->
+               <div style="width: 100%; align-self: center;">
+                  <p style="margin:0;font-size: 30px">
+                     <p:outputPanel><h1>Edit Sensor:</h1></p:outputPanel>
+                  </p>
+               </div>
+            </div>
+
+
+            <div class="card">
+               <h:panelGrid columns="2" style="width: 50%">
+
+                  <p:outputLabel style="margin-top:10px" value="ID:" />
+                  <p:inputText
+                          value="#{sensorDetailController.sensor.id}"
+                          id="sensorId"
+                          disabled="true"
+                          style="width: 100%; margin-top:10px"
+                          required="true"
+                  />
+
+                  <p:outputLabel style="margin-top:10px" value="Name" />
+                  <p:inputText
+                          value="#{sensorDetailController.sensor.name}"
+                          id="Name" style="width: 100%;margin-top:10px"
+                          maxlength="100"
+                          required="true"
+                  />
+
+                  <p:outputLabel value="Sensor Unit" />
+                  <p:selectOneMenu disabled="true" id="unit" value="#{sensorDetailController.sensor.sensorUnit}" style="width: 100%; margin-top:10px">
+                     <f:selectItems value="#{sensorUnitListController.sensorUnits}" var="unit" itemLabel="#{unit}" itemValue="#{unit}"/>
+                  </p:selectOneMenu>
+
+                  <p:outputLabel value="Sensor Typ" />
+                  <p:selectOneMenu disabled="true" id="typ" value="#{sensorDetailController.sensor.sensorTyp}" style="width: 100%; margin-top:10px">
+                     <f:selectItems value="#{sensorTypListController.itemTypes}" var="type" itemLabel="#{type}" itemValue="#{type}"/>
+                  </p:selectOneMenu>
+
+                  <p:outputLabel value="Lower Limit" />
+                  <p:inputText
+                          value="#{sensorDetailController.sensor.lowerLimit}"
+                          id="lowerLimit"
+                          style="width: 100%; margin-top:10px"
+                          type="number"
+                          required="true"
+                  />
+
+                  <p:outputLabel value="Upper Limit" />
+                  <p:inputText
+                          value="#{sensorDetailController.sensor.upperLimit}"
+                          id="upperLimit"
+                          type="number"
+                          style="width: 100%; margin-top:10px"
+                          required="true"
+                  />
+
+                  <p:outputLabel value="Threshold Warning" />
+                  <p:inputText
+                          value="#{sensorDetailController.sensor.currentThresholdWarning}"
+                          id="currentThresholdWarning"
+                          disabled="true"
+                          style="width: 100%; margin-top:10px"
+                          required="true"
+                  />
+
+
+
+               </h:panelGrid>
+               <p:commandButton
+                       value="Save"
+                       actionListener="#{sensorChartView.saveSensor()}"
+                       styleClass="button"
+                       update="@form :chart"
+               />
+            </div>
+
+         </h:form>
+      </p:card>
+      <p:card styleClass="my-card">
+         <h:form id="chart">
+
+         <h1>History:</h1>
+         <p:lineChart model="#{sensorChartView.lineModel}" style="width: 100%; height: 500px;"/>
+         <p:poll interval="5" listener="#{sensorChartView.createLineModel()}" update="@form"/>
+
+
+         <div style="display: flex; flex-direction: row; justify-content: center; align-items: center; padding: 30px; gap:30px">
+            <div>
+               <p:outputLabel for="timeMin" value="Time (Min): "/>
+               <p:datePicker id="timeMin" value="#{sensorChartView.minDate}" showTime="true" pattern="dd.MM.yyyy"/>
+            </div>
+
+            <div>
+               <p:outputLabel for="timeMax" value="Time (Max): "/>
+               <p:datePicker id="timeMax" value="#{sensorChartView.maxDate}" showTime="true" pattern="dd.MM.yyyy"/>
+            </div>
+            <div>
+                <p:commandButton value="Update" actionListener="#{sensorChartView.createLineModel()}" update="@form"/>
+            </div>
+         </div>
+         </h:form>
+
+      </p:card>
+   </ui:define>
+</ui:composition>

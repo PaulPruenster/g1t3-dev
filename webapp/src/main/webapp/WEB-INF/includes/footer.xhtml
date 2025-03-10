@@ -1,0 +1,92 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xml:lang="en">
+
+<head>
+    <title>Unused: Footer</title>
+</head>
+<body style="margin-bottom: 20px">
+<ui:composition>
+    <ui:fragment rendered="#{sessionInfoBean.loggedIn}">
+        <div class="ui-g" style="width:100%; height: 100%; background-color: #0274be; color:white; padding-top: 30px; padding-bottom: 20px">
+
+            <div class="ui-g-12 ui-lg-4 section" style="padding-left: 2%; padding-right:2%">
+
+                <div class="white-box">
+                    <p style="font-size: 20px;" >USEFULL LINKS</p>
+
+                    <div class="ui-g">
+                        <p:outputPanel class="ui-sm-12 ui-g-4 ui-lg-6">
+                            <p:link outcome="/secured/welcome.xhtml" value="DASHBOARD" class="footer-link-text" />
+                        </p:outputPanel>
+                        <p:outputPanel class="ui-sm-12 ui-g-4 ui-lg-6">
+                            <p:link outcome="/secured/userEdit.xhtml" value="PROFILE" class="footer-link-text" />
+                        </p:outputPanel>
+                        <p:outputPanel rendered="#{sessionInfoBean.hasRole('ADMIN')}" class="ui-sm-12 ui-g-4 ui-lg-6">
+                            <p:link outcome="/admin/users.xhtml" value="MANAGE USERS" class="footer-link-text" />
+                        </p:outputPanel>
+                        <p:outputPanel rendered="#{sessionInfoBean.hasRole('ADMIN')}" class="ui-sm-12 ui-g-4 ui-lg-6">
+                            <p:link outcome="/admin/sensorStations.xhtml" value="SENSOR STATIONS" class="footer-link-text" />
+                        </p:outputPanel>
+                        <p:outputPanel class="ui-sm-12 ui-g-4 ui-lg-6">
+                            <p:link outcome="/manage/organigram.xhtml" value="OVERVIEW" class="footer-link-text" />
+                        </p:outputPanel>
+                        <p:outputPanel rendered="#{sessionInfoBean.hasRole('ADMIN')}" class="ui-sm-12 ui-g-4 ui-lg-6">
+                            <p:link outcome="/admin/OrganigramGaertnerView.xhtml" value="GARDENER OVERVIEW" class="footer-link-text" />
+                        </p:outputPanel>
+                    </div>
+                </div>
+        </div>
+            <div class="ui-g-12 ui-lg-4 section" style="padding-left: 2%; padding-right:2%">
+                <div class="white-box">
+                    <p style="font-size: 20px;">INFO</p>
+                    <ui:fragment rendered="#{sessionInfoBean.loggedIn}">
+                        <p>Logged in as #{sessionInfoBean.currentUserName} [#{sessionInfoBean.currentUserRoles}]</p>
+                    </ui:fragment>
+                    <ui:fragment rendered="#{!sessionInfoBean.loggedIn}">
+                        Not logged in
+                    </ui:fragment>
+                    <p:button styleClass="rounded-button ui-button-outlined" style="color:white; font-family: 'Lucida Console', Courier New, monospace; margin-top: 20px" href="/logout" value="Logout" title="Logout" />
+                </div>
+            </div>
+            <div class="ui-g-12 ui-lg-4 section hidden-mobile" style="padding-left: 2%; padding-right:2%">
+                <div class="white-box">
+                    <p style="font-size: 20px;">MEMBERS</p>
+                    <div class="ui-g">
+                        <div class="ui-sm-12 ui-g-4 ui-lg-6">
+                            <a>MAAHS LUCA</a>
+                        </div>
+                        <div class="ui-sm-12 ui-g-4 ui-lg-6">
+                            <a>LUCA KEMENATER</a>
+                        </div>
+                        <div class="ui-sm-12 ui-g-4 ui-lg-6">
+                            <a>NEUER ALBERT</a>
+                        </div>
+                        <div class="ui-sm-12 ui-g-4 ui-lg-6">
+                            <a>PRÜNSTER PAUL</a>
+                        </div>
+                        <div class="ui-sm-12 ui-g-4 ui-lg-6">
+                            <a>MATTHIAS EBNER</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class=" ui-g-12 section copyright-bottom last-box">
+                <div style="vertical-align: center; text-align: center; font-size: 12px; height: 100%">
+                    <span>
+                    <a href="https://git.uibk.ac.at/informatik/qe/swess23/group1/g1t3" class="footer-link-text"><em class="pi pi-github"/></a>
+                    <a style="font-size: 13px"> | © 2023 - ALL RIGHTS RESERVED</a>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </ui:fragment>
+</ui:composition>
+</body>
+</html>
+

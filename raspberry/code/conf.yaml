@@ -1,0 +1,52 @@
+# configure file for accesspoint
+
+server:
+  url: http://192.168.0.109:8080
+  sending_url: /api/measurements
+  limits_url: /api/sensor/?/limits
+  new_sensorstation_url: /api/accessPoint/?/newSensorStation
+  new_accesspoint_url: /api/accessPoint/new
+  new_sensor_url: /api/sensorStation/?/addSensor
+  station_exits: /api/sensorStation/?/exists
+  send_bt_discover: /api/accessPoint/?/addBluetoothDevice
+  make_bt_connection: /api/accessPoint/?/makeConnection
+  should_connect: /api/accessPoint/?/shouldConnectBluetoothDevice
+  connection_success: /api/accessPoint/?/connectionSuccess
+  user_name: admin
+  user_pw: passwd
+  interval: 1 # in seconds // needs to be >= station
+sensorStation:
+  sensormodule:
+    lower: 1010
+    upper: 1090
+  TEMPERATURE:
+    uuid: 00002a6e-0000-1000-8000-00805f9b34fb
+    lower: 1011
+    upper: 1091
+  HUMIDITY:
+    uuid: 00002a6f-0000-1000-8000-00805f9b34fb
+    lower: 1012
+    upper: 1092
+  PRESSURE:
+    uuid: 00002a6d-0000-1000-8000-00805f9b34fb
+    lower: 1013
+    upper: 1093
+  AIR_QUALITY:
+    uuid: 0000fff1-0000-1000-8000-00805f9b34fb
+    lower: 1014
+    upper: 1094
+  ALTITUDE:
+    uuid: 00002ab3-0000-1000-8000-00805f9b34fb
+    lower: 1015
+    upper: 1095
+  LIGHT:
+    uuid: 00002afb-0000-1000-8000-00805f9b34fb
+    lower: 2010
+    upper: 2090
+  HYGROMETER:
+    uuid: 0000fff2-0000-1000-8000-00805f9b34fb
+    lower: 3010
+    upper: 3090
+  error_flag: 0000fff3-0000-1000-8000-00805f9b34fb
+  error_code: 0000fff4-0000-1000-8000-00805f9b34fb
+  interval: 1 # in seconds

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xml:lang="en"
+      style="height: 100%;">
+
+    <h:head>
+        <title>GreenKeeper</title>
+        <h:outputStylesheet name="css/style.css" />
+        <h:outputStylesheet name="css/style_footer.css" />
+
+
+        <!-- stylesheets here -->
+            <h:outputStylesheet library="css" name="chat.css" />
+            <!-- js-utils here -->		
+            <h:outputScript library="js" name="chat.js" />
+    </h:head>
+    <h:body style="display: table; height: 100%; width: 100%;  margin: 0; padding: 0">
+
+        <!-- Header -->
+        <div id="header" style="width: 100%">
+            <ui:include src="/WEB-INF/includes/header.xhtml" />
+        </div>
+
+        <!-- Content -->
+        <div id="page" style="display: table-row; height: 100%; width: 100%; background: ghostwhite">
+            <div  id="content" style="height: 100%; width: 100%; display: table-cell">
+                <ui:insert name="content">Content</ui:insert>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div id="footer" style="width: 100%">
+            <ui:include src="/WEB-INF/includes/footer.xhtml" />
+        </div>
+
+
+
+    </h:body>
+</html>

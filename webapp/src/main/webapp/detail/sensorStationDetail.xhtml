@@ -1,0 +1,166 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+
+   <ui:define name ="content">
+      <p:card styleClass="my-card">
+         <f:metadata>
+            <f:viewParam type="preRenderView" name="id" value="#{sensorStationDetailBean.sensorStationId}"/>
+         </f:metadata>
+
+
+         <h:form>
+            <div style="display: flex; margin-bottom: 20px">
+               <!-- Titel Left -->
+               <div style="width: 100%; align-self: center;">
+                  <p style="margin:0;font-size: 30px">
+                     <p:outputPanel><h1>Edit Sensor Station:</h1></p:outputPanel>
+                  </p>
+               </div>
+            </div>
+
+
+            <div class="card">
+               <h:panelGrid columns="2" style="width: 50%">
+
+                  <p:outputLabel style="margin-top:10px" value="ID:" />
+                  <p:inputText
+                          value="#{sensorStationDetailController.sensorStation.id}"
+                          id="accessPointId"
+                          disabled="true"
+                          style="width: 100%; margin-top:10px"
+                          required="true"
+                  />
+
+                  <p:outputLabel value="Name" />
+                  <p:inputText
+                          value="#{sensorStationDetailController.sensorStation.name}"
+                          id="Name" style="width: 100%"
+                          maxlength="100"
+                          required="true"
+                  />
+
+                  <p:outputLabel value="Update Interval" />
+                  <p:inputText
+                          value="#{sensorStationDetailController.sensorStation.updateInterval}"
+                          style="width: 100%"
+                          type="number"
+                          maxlength="100"
+                          required="true"
+                  />
+
+                  <p:outputLabel value="Gardener" />
+                  <p:selectOneMenu
+                          id="gaertner"
+                          style="width: 100%"
+                          value="#{sensorStationDetailController.sensorStationGardenName}"
+                          rendered="#{sessionInfoBean.hasRole('ADMIN')}"
+                  >
+                     <f:selectItem itemLabel="None" itemValue=""/>
+                     <f:selectItems value="#{userService.getAllUsersByRole('GARDENER')}" var="user" itemLabel="#{user.username}"
+                                    itemValue="#{user.username}" />
+
+                  </p:selectOneMenu>
+
+
+
+               </h:panelGrid>
+               <p:outputPanel style="margin-top: 20px">
+                  <p:commandButton
+                     value="Save"
+                     actionListener="#{sensorStationDetailController.doSaveSensorStation()}"
+                     styleClass="button"
+                     update="@form"
+                  />
+
+                     <p:commandButton
+                             value="Open Images"
+                             action="#{sensorStationDetailController.getUrlToImages()}"
+                             styleClass="button"
+                             update="@form"
+                             style="margin-left: 10px"
+                     />
+               </p:outputPanel>
+            </div>
+
+         </h:form>
+      </p:card>
+
+      <!-- Card for editing cards -->
+      <p:card class="my-card">
+
+         <p:outputPanel>
+            <h1>Sensor:</h1>
+            <h:form id="sensorForm">
+               <p:dataTable id="sensorTable" var="sensor" value="#{sensorStationDetailBean.getSensorStationListFromAccessPoint()}" style="margin-top: 20px" reflow="true" rows="10" paginator="true">
+                  <p:column headerText="Name">
+                     <h:outputText value="#{sensor.name}"/>
+                  </p:column>
+                  <p:column headerText="sensorTyp">
+                     <h:outputText value="#{sensor.sensorTyp}"/>
+                  </p:column>
+                  <p:column headerText="sensorUnit">
+                     <h:outputText value="#{sensor.sensorUnit}"/>
+                  </p:column>
+                  <p:column headerText="upperLimit">
+                     <h:outputText value="#{sensor.upperLimit}"/>
+                  </p:column>
+                  <p:column headerText="lowerLimit">
+                     <h:outputText value="#{sensor.lowerLimit}"/>
+                  </p:column>
+
+                  <p:column style="width:100px;text-align: center">
+                     <p:button style="margin-right: 10px" icon="pi pi-external-link" type="button" styleClass="rounded-button ui-button-outlined" href="/detail/sensorDetail.xhtml?id=#{sensor.sensorId}"/>
+                     <p:commandButton  style="margin-right: 10px" styleClass="rounded-button ui-button-outlined" update=":sensorForm:sensorEditDialog" oncomplete="PF('sensorEditDialog').show()" icon="pi pi-pencil" title="Edit">
+                        <f:setPropertyActionListener value="#{sensor}" target="#{sensorDetailController.sensor}" />
+                     </p:commandButton>
+                  </p:column>
+               </p:dataTable>
+               <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" width="300">
+                  <p:commandButton value="Yes" type="button" styleClass="ui-confirmdialog-yes" icon="pi pi-check" />
+                  <p:commandButton value="No" type="button" styleClass="ui-confirmdialog-no" icon="pi pi-times" />
+               </p:confirmDialog>
+
+               <!-- Dialog to edit existing card -->
+               <p:dialog header="Edit Sensor" id="sensorEditDialog" widgetVar="sensorEditDialog" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+                  <p:outputPanel id="sensorStationData" rendered="#{not empty sensorDetailController.sensor}">
+                     <h:panelGrid columns="2" cellpadding="5" >
+                        <p:outputLabel value="name" />
+                        <p:inputText value="#{sensorDetailController.sensor.name}" id="name" style="width: 100%" maxlength="100"/>
+
+                        <p:outputLabel value="upperLimit" />
+                        <p:inputText value="#{sensorDetailController.sensor.upperLimit}" id="upperLimit" type="number" style="width: 100%;"/>
+
+                        <p:outputLabel value="lowerLimit" />
+                        <p:inputText value="#{sensorDetailController.sensor.lowerLimit}" id="lowerLimit" type="number" style="width: 100%;"/>
+
+                        <p:outputLabel value="currentThresholdWarning" />
+                        <p:inputText value="#{sensorDetailController.sensor.currentThresholdWarning}" id="currentThresholdWarning" disabled="true" style="width: 100%;"/>
+
+
+                     </h:panelGrid>
+
+                     <p:separator />
+
+                     <!-- Buttons at the bottom -->
+                     <h:panelGrid columns="3">
+                        <p:commandButton value="Save" action="#{sensorDetailController.doSaveSensor()}" oncomplete="PF('sensorEditDialog').hide()" update=":sensorForm:sensorTable"/>
+                        <p:commandButton value="Reload" action="#{sensorDetailController.doReloadSensor()}" update=":sensorForm:sensorStationData"/>
+                        <p:commandButton value="Abort" onclick="PF('userEditDialog').hide()"/>
+                     </h:panelGrid>
+                  </p:outputPanel>
+               </p:dialog>
+            </h:form>
+
+
+
+         </p:outputPanel>
+      </p:card>
+
+   </ui:define>
+</ui:composition>

@@ -1,0 +1,5 @@
+webapp/target
+.idea
+webapp/.idea
+raspberry/code/accesspoint.db
+raspberry/code/log.log

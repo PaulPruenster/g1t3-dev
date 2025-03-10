@@ -1,0 +1,16 @@
+.widget-panel {
+    width: 400px;
+    margin: 20px;
+    border: 3px solid #44c793;
+    border-radius: 5px;
+}
+
+body .ui-panel .ui-panel-titlebar {
+    border: none;
+    border-radius: unset;
+    background: #44c793;
+}
+
+body .ui-panel .ui-panel-content {
+    background: #e6e6e6;
+}
